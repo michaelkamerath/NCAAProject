@@ -1,0 +1,5 @@
+# No configuration files #
+._*
+
+# No PyCharm specific files #
+.idea

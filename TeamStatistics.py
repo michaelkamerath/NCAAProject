@@ -25,7 +25,7 @@ class TeamStatistics(object):
         self.game_stats[team, year].append(frame)
 
     def create_stats(self, team, year):
-        for key, value, frame in 
+        for key, value, frame in
 
 
 
