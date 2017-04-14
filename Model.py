@@ -20,19 +20,19 @@ class Model(object):
         turnovers = 0
         foul = 0
         allowed_points = 0
-        points_predictor = 40
-        fg_percentage_predictor = 250
-        fgs_attempted_predictor = 20
-        three_ptr_percentage_predictor = 150
-        three_ptrs_attempted_predictor = 10
-        offensive_rebounds_predictor = 15
-        total_rebounds_predictor = 10
-        assists_predictor = 5
-        stls_predictor = 5
-        blks_predictor = 5
-        turnovers_predictor = 10
-        foul_predictor = 3
-        allowed_points_predictor = 20
+        points_predictor = 4.0
+        fg_percentage_predictor = 25.0
+        fgs_attempted_predictor = 2.0
+        three_ptr_percentage_predictor = 15.0
+        three_ptrs_attempted_predictor = 1.0
+        offensive_rebounds_predictor = 1.5
+        total_rebounds_predictor = 1.0
+        assists_predictor = .5
+        stls_predictor = .5
+        blks_predictor = .5
+        turnovers_predictor = 1.0
+        foul_predictor = .3
+        allowed_points_predictor = 2.0
 
         altering_value = points_per_game * points_predictor + fg_percentage * fg_percentage_predictor \
                         + fgs_attempted * fgs_attempted_predictor + three_ptr_percentage * three_ptr_percentage_predictor \
@@ -48,4 +48,5 @@ class Model(object):
 
 
     def adjust_model(self):
+        return 0
 

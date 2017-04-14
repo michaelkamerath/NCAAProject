@@ -1,5 +1,5 @@
 # No configuration files #
-._*
+.__pycache__
 
 # No PyCharm specific files #
 .idea
