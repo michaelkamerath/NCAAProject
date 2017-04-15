@@ -14,8 +14,8 @@ all_years = all_stats.year.unique()
 all_teams = sorted(all_teams)
 all_years = sorted(all_years)
 
-print(all_teams)
-print(all_years)
+#print(all_teams)
+#print(all_years)
 
 unc_2008 = all_stats.ix[((all_stats['team'] == 'North Carolina') | (all_stats['opponent'] == 'North Carolina'))
                         & (all_stats['year'] == 2008)]
@@ -26,3 +26,5 @@ al_huntsville_2008 = all_stats.ix[
 
 team_stats = ts.TeamStatistics()
 team_stats.setup('North Carolina', 2008, unc_2008)
+
+team_stats.create_stats('North Carolina', 2008)
