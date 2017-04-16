@@ -1,4 +1,5 @@
 from collections import defaultdict
+import pandas as pd
 
 
 class TeamStatistics(object):
@@ -12,6 +13,9 @@ class TeamStatistics(object):
     def __init__(self):
         self.game_stats = defaultdict(lambda: [0, 0])
         self.season_averages = defaultdict(lambda : [0,0])
+        self.all_stats = pd.DataFrame()
+        self.all_teams = []
+        self.all_years = []
 
     # Adds data obtained from the csv files to this class
     # It will later be used to calculate averages for the
@@ -23,6 +27,24 @@ class TeamStatistics(object):
     #    frame: the data frame containing information about the team
     def setup(self, team, year, frame):
         self.game_stats[team, year] = frame
+
+    def read_in_data(self):
+        game_stats = pd.read_csv('All_Data/09_14_game_stats.csv')
+        game_info = pd.read_csv('All_Data/09_14_game_info.csv')
+
+        self.all_stats = pd.merge(game_stats, game_info, left_on="game_id", right_on="Game_ID")
+
+        all_teams = self.all_stats.team.unique()
+
+        all_years = self.all_stats.year.unique()
+
+        self.all_teams = sorted(all_teams)
+        self.all_years = sorted(all_years)
+
+    def populate_game_stats(self, team1, year):
+        self.game_stats[team1, year] = self.all_stats.ix[
+            ((self.all_stats['team'] == team1) | (self.all_stats['opponent'] == team1))
+            & (self.all_stats['year'] == year)]
 
     def create_stats(self, team, year):
         #print(self.game_stats[team, year])
@@ -87,7 +109,7 @@ class TeamStatistics(object):
                                             stl/total_games, blk/total_games, turnover/total_games, pf/total_games,
                                             pts_allowed/total_games]
 
-        print(self.season_averages[team, year])
+        return self.season_averages[team, year]
 
 
 
