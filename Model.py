@@ -35,16 +35,60 @@ class Model(object):
         self.turnovers_predictor = 1.0
         self.foul_predictor = .3
         self.allowed_points_predictor = 2.0
-
-        self.altering_value = self.points_per_game * self.points_predictor + self.fg_percentage * self.fg_percentage_predictor \
-                              + self.fgs_attempted * self.fgs_attempted_predictor + self.three_ptr_percentage * self.three_ptr_percentage_predictor \
-                              + self.three_ptrs_attempted * self.three_ptrs_attempted_predictor + self.offensive_rebounds * self.offensive_rebounds_predictor \
-                              + self.total_rebounds * self.total_self.rebounds_predictor + self.assists * self.assists_predictor + self.stls * self.stls_predictor \
-                              + self.blks * self.blks_predictor + self.turnovers * self.turnovers_predictor + self.foul * self.foul_predictor \
-                              - self.allowed_points * self.allowed_points_predictor
+        
+        self.altering_value = 0
 
     def predict_winner(self, team1_stats, team2_stats):
-        return True
+        team1_score = 0
+        team2_score = 0
+
+        self.points_per_game = team1_stats[0]
+        self.fg_percentage = team1_stats[1]/team1_stats[2]
+        self.fgs_attempted = team1_stats[2]
+        self.three_ptr_percentage = team1_stats[4]/team1_stats[3]
+        self.three_ptrs_attempted = team1_stats[3]
+        self.offensive_rebounds = team1_stats[5]
+        self.total_rebounds = team1_stats[6]
+        self.assists = team1_stats[7]
+        self.stls = team1_stats[8]
+        self.blks = team1_stats[9]
+        self.turnovers = team1_stats[10]
+        self.foul = team1_stats[11]
+        self.allowed_points = team1_stats[12]
+        self.compute_v_value()
+
+        team1_score = (pow(2.718, float(self.altering_value))) / (1 + pow(2.718, float(self.altering_value)))
+
+        self.points_per_game = team2_stats[0]
+        self.fg_percentage = team2_stats[1]/team2_stats[2]
+        self.fgs_attempted = team2_stats[2]
+        self.three_ptr_percentage = team2_stats[4]/team2_stats[3]
+        self.three_ptrs_attempted = team2_stats[3]
+        self.offensive_rebounds = team2_stats[5]
+        self.total_rebounds = team2_stats[6]
+        self.assists = team2_stats[7]
+        self.stls = team2_stats[8]
+        self.blks = team2_stats[9]
+        self.turnovers = team2_stats[10]
+        self.foul = team2_stats[11]
+        self.allowed_points = team2_stats[12]
+        self.compute_v_value()
+
+        team2_score = (pow(2.718, float(self.altering_value))) / (1 + pow(2.718, float(self.altering_value)))
+
+        print(self.altering_value)
+        if team1_score >= team2_score:
+            return True
+        else:
+            return False
 
     def adjust_model(self):
         return 0
+
+    def compute_v_value(self):
+        self.altering_value = self.points_per_game * self.points_predictor + self.fg_percentage * self.fg_percentage_predictor \
+                              + self.fgs_attempted * self.fgs_attempted_predictor + self.three_ptr_percentage * self.three_ptr_percentage_predictor \
+                              + self.three_ptrs_attempted * self.three_ptrs_attempted_predictor + self.offensive_rebounds * self.offensive_rebounds_predictor \
+                              + self.total_rebounds * self.total_rebounds_predictor + self.assists * self.assists_predictor + self.stls * self.stls_predictor \
+                              + self.blks * self.blks_predictor + self.turnovers * self.turnovers_predictor + self.foul * self.foul_predictor \
+                              - self.allowed_points * self.allowed_points_predictor
