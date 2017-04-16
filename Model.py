@@ -35,7 +35,7 @@ class Model(object):
         self.turnovers_predictor = 1.0
         self.foul_predictor = .3
         self.allowed_points_predictor = 2.0
-
+        
         self.altering_value = 0
 
     def predict_winner(self, team1_stats, team2_stats):

@@ -4,10 +4,10 @@ import tkinter as tk
 import tkinter.ttk as ttk
 root = tk.Tk()
 
-
 stats_class = ts.TeamStatistics()
 stats_class.read_in_data()
 model = mdl.Model()
+
 
 class Application(tk.Frame):
     def __init__(self, master=root):
