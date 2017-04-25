@@ -86,9 +86,9 @@ class Model(object):
         return 0
 
     def compute_v_value(self):
-        self.altering_value = self.points_per_game * self.points_predictor + self.fg_percentage * self.fg_percentage_predictor \
+        self.altering_value = (self.points_per_game * self.points_predictor + self.fg_percentage * self.fg_percentage_predictor \
                               + self.fgs_attempted * self.fgs_attempted_predictor + self.three_ptr_percentage * self.three_ptr_percentage_predictor \
                               + self.three_ptrs_attempted * self.three_ptrs_attempted_predictor + self.offensive_rebounds * self.offensive_rebounds_predictor \
                               + self.total_rebounds * self.total_rebounds_predictor + self.assists * self.assists_predictor + self.stls * self.stls_predictor \
                               + self.blks * self.blks_predictor + self.turnovers * self.turnovers_predictor + self.foul * self.foul_predictor \
-                              - self.allowed_points * self.allowed_points_predictor
+                              - self.allowed_points * self.allowed_points_predictor) / 100

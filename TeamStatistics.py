@@ -48,6 +48,7 @@ class TeamStatistics(object):
 
     def create_stats(self, team, year):
         #print(self.game_stats[team, year])
+        home_team = False
         pts = 0
         fgm = 0
         fga = 0
@@ -63,46 +64,95 @@ class TeamStatistics(object):
         pts_allowed = 0
         total_games = 0
         for column in self.game_stats[team, year]:
-            if column == 'pts':
-                for game in self.game_stats[team, year][column]:
-                    pts += game
-                    total_games += 1
-            if column == 'fgm':
-                for game in self.game_stats[team, year][column]:
-                    fgm += game
-            if column == 'fga':
-                for game in self.game_stats[team, year][column]:
-                    fga += game
-            if column == 't_3pm':
-                for game in self.game_stats[team, year][column]:
-                    t_3pm += game
-            if column == 't_3pa':
-                for game in self.game_stats[team, year][column]:
-                    t_3pa += game
-            if column == 'oreb':
-                for game in self.game_stats[team, year][column]:
-                    oreb += game
-            if column == 'reb':
-                for game in self.game_stats[team, year][column]:
-                    reb += game
-            if column == 'ast':
-                for game in self.game_stats[team, year][column]:
-                    ast += game
-            if column == 'stl':
-                for game in self.game_stats[team, year][column]:
-                    stl += game
-            if column == 'blk':
-                for game in self.game_stats[team, year][column]:
-                    blk += game
-            if column == 'turnover':
-                for game in self.game_stats[team, year][column]:
-                    turnover += game
-            if column == 'pf':
-                for game in self.game_stats[team, year][column]:
-                    pf += game
-            if column == 'pts_allowed':
-                for game in self.game_stats[team, year][column]:
-                    pts_allowed += game
+            if column == 'team' and self.game_stats[team, year][column] == team:
+                home = True
+            if home_team:
+                if self.game_stats[team, year][column] == team:
+                    if column == 'pts':
+                        for game in self.game_stats[team, year][column]:
+                            pts += game
+                            total_games += 1
+                if column == 'fgm':
+                    for game in self.game_stats[team, year][column]:
+                        fgm += game
+                if column == 'fga':
+                    for game in self.game_stats[team, year][column]:
+                        fga += game
+                if column == 't_3pm':
+                    for game in self.game_stats[team, year][column]:
+                        t_3pm += game
+                if column == 't_3pa':
+                    for game in self.game_stats[team, year][column]:
+                        t_3pa += game
+                if column == 'oreb':
+                    for game in self.game_stats[team, year][column]:
+                        oreb += game
+                if column == 'reb':
+                    for game in self.game_stats[team, year][column]:
+                        reb += game
+                if column == 'ast':
+                    for game in self.game_stats[team, year][column]:
+                        ast += game
+                if column == 'stl':
+                    for game in self.game_stats[team, year][column]:
+                        stl += game
+                if column == 'blk':
+                    for game in self.game_stats[team, year][column]:
+                        blk += game
+                if column == 'turnover':
+                    for game in self.game_stats[team, year][column]:
+                        turnover += game
+                if column == 'pf':
+                    for game in self.game_stats[team, year][column]:
+                        pf += game
+                if column == 'pts_allowed':
+                    for game in self.game_stats[team, year][column]:
+                        pts_allowed += game
+            else:
+                if column == 'pts_allowed':
+                    for game in self.game_stats[team, year][column]:
+                        pts += game
+                        total_games += 1
+                if column == 'opp_fgm':
+                    for game in self.game_stats[team, year][column]:
+                        fgm += game
+                if column == 'opp_fga':
+                    for game in self.game_stats[team, year][column]:
+                        fga += game
+                if column == 'opp_t_3pm':
+                    for game in self.game_stats[team, year][column]:
+                        t_3pm += game
+                if column == 'opp_t_3pa':
+                    for game in self.game_stats[team, year][column]:
+                        t_3pa += game
+                if column == 'opp_oreb':
+                    for game in self.game_stats[team, year][column]:
+                        oreb += game
+                if column == 'opp_reb':
+                    for game in self.game_stats[team, year][column]:
+                        reb += game
+                if column == 'opp_ast':
+                    for game in self.game_stats[team, year][column]:
+                        ast += game
+                if column == 'opp_stl':
+                    for game in self.game_stats[team, year][column]:
+                        stl += game
+                if column == 'opp_blk':
+                    for game in self.game_stats[team, year][column]:
+                        blk += game
+                if column == 'opp_turnover':
+                    for game in self.game_stats[team, year][column]:
+                        turnover += game
+                if column == 'opp_pf':
+                    for game in self.game_stats[team, year][column]:
+                        pf += game
+                if column == 'pts':
+                    for game in self.game_stats[team, year][column]:
+                        pts_allowed += game
+
+
+
+
 
         self.season_averages[team, year] = [pts/total_games, fgm/total_games, fga/total_games, t_3pa/total_games,
                                             t_3pm/total_games, oreb/total_games, reb/total_games, ast/total_games,
