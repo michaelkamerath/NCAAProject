@@ -21,7 +21,10 @@ class Application(tk.Frame):
         self.calc_button.place(relx=.5, rely=.5, anchor=tk.CENTER)
 
         teams = ['Villanova', 'Kansas', 'North Carolina', 'Gonzaga', 'Kentucky', 'Arizona', 'Duke', 'Louisville',
-                 'Oregon', 'Florida St', 'UCLA', 'Baylor', 'Butler', 'Florida', 'West Virginia', 'Purdue', 'Virginia']
+                 'Oregon', 'Florida St', 'UCLA', 'Baylor', 'Butler', 'Florida', 'West Virginia', 'Purdue', 'Virginia',
+                 "Syracuse", "Vermont", "Georgetown", "Ohio", "New Mexico", "Harvard", "Mercer", 'Kansas', 'Memphis']
+
+        teams = sorted(teams)
 
         years = [2008, 2009, 2010, 2011, 2012, 2013, 2014]
 
@@ -67,9 +70,6 @@ class Application(tk.Frame):
             self.result['text'] = team1_name + " is predicted to win."
         else:
             self.result['text'] = team2_name + " is predicted to win."
-
-
-
 
 
 
