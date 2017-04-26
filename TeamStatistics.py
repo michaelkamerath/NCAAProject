@@ -48,6 +48,7 @@ class TeamStatistics(object):
 
     def create_stats(self, team, year):
         #print(self.game_stats[team, year])
+        home_team = False
         pts = 0
         fgm = 0
         fga = 0
@@ -230,9 +231,6 @@ class TeamStatistics(object):
                     if not home[iterator]:
                         pts_allowed += game
                     iterator += 1
-
-
-
 
         print("total games: " + str(total_games))
         self.season_averages[team, year] = [pts/total_games, fgm/total_games, fga/total_games, t_3pa/total_games,
