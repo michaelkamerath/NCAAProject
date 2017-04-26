@@ -41,6 +41,10 @@ class Model(object):
     def predict_winner(self, team1_stats, team2_stats):
         team1_score = 0
         team2_score = 0
+        print("Team 1 Average Season Stats:")
+        print(team1_stats)
+        print("Team 2 Average Season Stats: ")
+        print(team2_stats)
 
         self.points_per_game = team1_stats[0]
         self.fg_percentage = team1_stats[1]/team1_stats[2]
@@ -76,7 +80,6 @@ class Model(object):
 
         team2_score = (pow(2.718, float(self.altering_value))) / (1 + pow(2.718, float(self.altering_value)))
 
-        print(self.altering_value)
         if team1_score >= team2_score:
             return True
         else:
