@@ -7,6 +7,9 @@ root = tk.Tk()
 stats_class = ts.TeamStatistics()
 stats_class.read_in_data()
 model = mdl.Model()
+#model.adjust_model()
+#model.adjust_model_down()
+#model.print_model()
 
 
 class Application(tk.Frame):

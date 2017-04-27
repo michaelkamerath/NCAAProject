@@ -28,10 +28,45 @@ class Model(object):
         self.allowed_points = 0
         self.altering_value = 0
         self.accuracy = 0
-        self.model_modifiers = [4.0, 25.0, 2.0, 15.0, 1.0, 1.5, 1.0, 0.5, 0.5, 0.5, 1.0, 0.3, 2.0]
-        self.current_modifiers = [4.0, 25.0, 2.0, 15.0, 1.0, 1.5, 1.0, 0.5, 0.5, 0.5, 1.0, 0.3, 2.0]
+        self.model_modifiers = [0.4, 25.0, 2.0, 15.0, 0.5, 1.5, 1.0, 0.5, 0.5, 0.5, 1.0, 0.3, 2.0]
+        self.current_modifiers = [0.4, 25.0, 2.0, 15.0, 0.5, 1.5, 1.0, 0.5, 0.5, 0.5, 1.0, 0.3, 2.0]
+        self.min_modifiers = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.max_modifiers = [10.0, 30.0, 5.0, 25.0, 2.5, 3.5, 2.5, 2.0, 2.0, 2.0, 2.5, 1.0, 5.0]
+        self.model_bracket_2014 = []
+        self.model_bracket_2008 = []
+        self.winning_bracket_2014 = \
+            [1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+             1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1,
 
+             1, 0, 1, 1, 1, 0, 0, 1,
+             1, 0, 1, 0, 0, 0, 1, 0,
+
+             1, 1, 0, 0,
+             1, 0, 1, 0,
+
+             1, 0,
+             0, 1,
+
+             0, 0,
+
+             1]
+        self.winning_bracket_2008 = \
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1,
+             1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1,
+
+             1, 0, 0, 0, 1, 1, 0, 1,
+             1, 1, 0, 0, 1, 1, 0, 1,
+
+             1, 1, 1, 0,
+             1, 0, 1, 1,
+
+             1, 1,
+             1, 1,
+
+             0, 1,
+
+             1]
+        
     def predict_winner(self, team1_stats, team2_stats):
         self.points_per_game = team1_stats[0]
         self.fg_percentage = team1_stats[1]/team1_stats[2]
@@ -73,139 +108,40 @@ class Model(object):
             return False
 
     def adjust_model(self):
-        for position, element in enumerate(self.model_modifiers):
-            if self.current_modifiers[position] < self.max_modifiers[position]:
-                self.current_modifiers[position] += 0.1
-                possible_model_value = self.compare_model()
-                if possible_model_value > self.accuracy:
-                    self.accuracy = possible_model_value
-                    self.model_modifiers[position] = self.current_modifiers[position]
+        for position in range(0, len(self.model_modifiers) - 1):
+            done = False
+            while not done:
+                if self.current_modifiers[position] < self.max_modifiers[position]:
+                    self.current_modifiers[position] += 0.1
+                    possible_model_value = self.compare_model()
+                    if possible_model_value > self.accuracy:
+                        self.accuracy = possible_model_value
+                        self.model_modifiers[position] = self.current_modifiers[position]
+                        print(self.accuracy)
+                        print(*self.model_modifiers, sep=', ')
+                else:
+                    self.current_modifiers[position] = self.model_modifiers[position]
+                    print("Our current model is: ", *self.current_modifiers, sep=', ')
+                    done = True
+
+    def adjust_model_down(self):
+        for position in range(0, len(self.model_modifiers) - 1):
+            done = False
+            while not done:
+                if self.current_modifiers[position] > self.min_modifiers[position]:
+                    self.current_modifiers[position] -= 0.1
+                    possible_model_value = self.compare_model()
+                    if possible_model_value > self.accuracy:
+                        self.accuracy = possible_model_value
+                        self.model_modifiers[position] = self.current_modifiers[position]
+                        print(self.accuracy)
+                        print(*self.model_modifiers, sep=', ')
+                else:
+                    self.current_modifiers[position] = self.model_modifiers[position]
+                    print("Our current model is: ", *self.current_modifiers, sep=', ')
+                    done = True
 
     def compute_v_value(self):
-      
-        self.altering_value = (self.points_per_game * self.points_predictor + self.fg_percentage * self.fg_percentage_predictor \
-                              + self.fgs_attempted * self.fgs_attempted_predictor + self.three_ptr_percentage * self.three_ptr_percentage_predictor \
-                              + self.three_ptrs_attempted * self.three_ptrs_attempted_predictor + self.offensive_rebounds * self.offensive_rebounds_predictor \
-                              + self.total_rebounds * self.total_rebounds_predictor + self.assists * self.assists_predictor + self.stls * self.stls_predictor \
-                              + self.blks * self.blks_predictor + self.turnovers * self.turnovers_predictor + self.foul * self.foul_predictor \
-                              - self.allowed_points * self.allowed_points_predictor) / 100
-
-
-    def compare_model(self):
-        winning_bracket_2014 = [1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1,
-                                1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1,
-
-                                1, 0, 1, 1, 1, 0, 0, 1,
-                                1, 0, 1, 0, 0, 0, 1, 0,
-
-                                1, 1, 0, 0,
-                                1, 0, 1, 0,
-
-                                1, 0,
-                                0, 1,
-
-                                0,
-                                0,
-
-                                1]
-        model_bracket_2014 = []
-
-        model_bracket_2014.append(self.simulate_game('Florida', 'Albany'))
-        model_bracket_2014.append(self.simulate_game('Colorado', 'Pittsburgh'))
-        model_bracket_2014.append(self.simulate_game('VCU', 'SF Austin'))
-        model_bracket_2014.append(self.simulate_game('UCLA', 'Tulsa'))
-        model_bracket_2014.append(self.simulate_game('Ohio State', 'Dayton'))
-        model_bracket_2014.append(self.simulate_game('Syracuse', 'W Michigan'))
-        model_bracket_2014.append(self.simulate_game('New Mexico', 'Stanford'))
-        model_bracket_2014.append(self.simulate_game('Kansas', 'E Kentucky'))
-        model_bracket_2014.append(self.simulate_game('Virginia', 'Coast Carolina'))
-        model_bracket_2014.append(self.simulate_game('Memphis', 'G. Washington'))
-        model_bracket_2014.append(self.simulate_game('Cincinnati', 'Harvard'))
-        model_bracket_2014.append(self.simulate_game('Michigan State', 'Delaware'))
-        model_bracket_2014.append(self.simulate_game('North Carolina', 'Providence'))
-        model_bracket_2014.append(self.simulate_game('Iowa State', 'N Carolina Cent'))
-        model_bracket_2014.append(self.simulate_game('Connecticut', "Saint Joseph's"))
-        model_bracket_2014.append(self.simulate_game('Villanova', 'Milwaukee'))
-        model_bracket_2014.append(self.simulate_game('Arizona', 'Weber State'))
-        model_bracket_2014.append(self.simulate_game('Gonzaga', 'Oklahoma St'))
-        model_bracket_2014.append(self.simulate_game('Oklahoma', 'North Dakota St'))
-        model_bracket_2014.append(self.simulate_game('San Diego State', 'New Mexico St'))
-        model_bracket_2014.append(self.simulate_game('Baylor', 'Nebraska'))
-        model_bracket_2014.append(self.simulate_game('Creighton', 'LA-Lafayette'))
-        model_bracket_2014.append(self.simulate_game('Oregon', 'BYU'))
-        model_bracket_2014.append(self.simulate_game('Wisconsin', 'American U'))
-        model_bracket_2014.append(self.simulate_game('Wichita State', 'Cal Poly'))
-        model_bracket_2014.append(self.simulate_game('Kentucky', 'Kansas St'))
-        model_bracket_2014.append(self.simulate_game('Saint Louis', 'NC State'))
-        model_bracket_2014.append(self.simulate_game('Louisville', 'Manhattan'))
-        model_bracket_2014.append(self.simulate_game('Massachusetts', 'Tennessee'))
-        model_bracket_2014.append(self.simulate_game('Duke', 'Mercer'))
-        model_bracket_2014.append(self.simulate_game('Texas', 'Arizona State'))
-        model_bracket_2014.append(self.simulate_game('Michigan', 'Wofford'))
-
-        model_bracket_2014.append(self.simulate_game('Florida', 'Pittsburgh'))
-        model_bracket_2014.append(self.simulate_game('SF Austin', 'UCLA'))
-        model_bracket_2014.append(self.simulate_game('Dayton', 'Syracuse'))
-        model_bracket_2014.append(self.simulate_game('Stanford', 'Kansas'))
-        model_bracket_2014.append(self.simulate_game('Virginia', 'Memphis'))
-        model_bracket_2014.append(self.simulate_game('Harvard', 'Michigan State'))
-        model_bracket_2014.append(self.simulate_game('North Carolina', 'Iowa State'))
-        model_bracket_2014.append(self.simulate_game('Connecticut', 'Villanova'))
-        model_bracket_2014.append(self.simulate_game('Arizona', 'Gonzaga'))
-        model_bracket_2014.append(self.simulate_game('North Dakota St', 'San Diego State'))
-        model_bracket_2014.append(self.simulate_game('Baylor', 'Creighton'))
-        model_bracket_2014.append(self.simulate_game('Oregon', 'Wisconsin'))
-        model_bracket_2014.append(self.simulate_game('Wichita State', 'Kentucky'))
-        model_bracket_2014.append(self.simulate_game('Saint Louis', 'Louisville'))
-        model_bracket_2014.append(self.simulate_game('Tennessee', 'Mercer'))
-        model_bracket_2014.append(self.simulate_game('Texas', 'Michigan'))
-
-        model_bracket_2014.append(self.simulate_game('Florida', 'UCLA'))
-        model_bracket_2014.append(self.simulate_game('Dayton', 'Stanford'))
-        model_bracket_2014.append(self.simulate_game('Virginia', 'Michigan State'))
-        model_bracket_2014.append(self.simulate_game('Iowa State', 'Connecticut'))
-        model_bracket_2014.append(self.simulate_game('Arizona', 'San Diego State'))
-        model_bracket_2014.append(self.simulate_game('Baylor', 'Wisconsin'))
-        model_bracket_2014.append(self.simulate_game('Kentucky', 'Louisville'))
-        model_bracket_2014.append(self.simulate_game('Tennessee', 'Michigan'))
-
-        model_bracket_2014.append(self.simulate_game('Florida', 'Dayton'))
-        model_bracket_2014.append(self.simulate_game('Michigan State', 'Connecticut'))
-        model_bracket_2014.append(self.simulate_game('Arizona', 'Wisconsin'))
-        model_bracket_2014.append(self.simulate_game('Kentucky', 'Michigan'))
-
-        model_bracket_2014.append(self.simulate_game('Florida', 'Connecticut'))
-        model_bracket_2014.append(self.simulate_game('Wisconsin', 'Kentucky'))
-
-        model_bracket_2014.append(self.simulate_game('Connecticut', 'Kentucky'))
-
-        success = 0
-
-        if len(model_bracket_2014) == len(winning_bracket_2014):
-            for iterator in range(0, len(model_bracket_2014)):
-                if model_bracket_2014[iterator] == winning_bracket_2014[iterator]:
-                    success += 1
-        else:
-            print("Error!  Length of Model and Winner Brackets are not equal!")
-
-        accuracy_of_model = success/len(model_bracket_2014)
-
-        return accuracy_of_model
-
-
-    def simulate_game(self, team1_name, team2_name):
-        year = 2014
-        stats_class.populate_game_stats(team1_name, year)
-        stats_class.create_stats(team1_name, year)
-        stats_class.populate_game_stats(team2_name, year)
-        stats_class.create_stats(team2_name, year)
-
-        result = self.predict_winner(stats_class.season_averages[team1_name, year],
-                                      stats_class.season_averages[team2_name, year])
-
-        return result
-      
-      
         self.altering_value = (self.points_per_game * self.current_modifiers[0]
                                + self.fg_percentage * self.current_modifiers[1]
                                + self.fgs_attempted * self.current_modifiers[2]
@@ -219,3 +155,169 @@ class Model(object):
                                - self.turnovers * self.current_modifiers[10]
                                - self.foul * self.current_modifiers[11]
                                - self.allowed_points * self.current_modifiers[12]) / 100
+
+    def compare_model(self):
+        # self.model_bracket_2014.append(self.simulate_game('Florida', 'Albany'))
+        # self.model_bracket_2014.append(self.simulate_game('Colorado', 'Pittsburgh'))
+        # self.model_bracket_2014.append(self.simulate_game('VCU', 'SF Austin'))
+        # self.model_bracket_2014.append(self.simulate_game('UCLA', 'Tulsa'))
+        # self.model_bracket_2014.append(self.simulate_game('Ohio State', 'Dayton'))
+        # self.model_bracket_2014.append(self.simulate_game('Syracuse', 'W Michigan'))
+        # self.model_bracket_2014.append(self.simulate_game('New Mexico', 'Stanford'))
+        # self.model_bracket_2014.append(self.simulate_game('Kansas', 'E Kentucky'))
+        # self.model_bracket_2014.append(self.simulate_game('Virginia', 'Coast Carolina'))
+        # self.model_bracket_2014.append(self.simulate_game('Memphis', 'G. Washington'))
+        # self.model_bracket_2014.append(self.simulate_game('Cincinnati', 'Harvard'))
+        # self.model_bracket_2014.append(self.simulate_game('Michigan State', 'Delaware'))
+        # self.model_bracket_2014.append(self.simulate_game('North Carolina', 'Providence'))
+        # self.model_bracket_2014.append(self.simulate_game('Iowa State', 'N Carolina Cent'))
+        # self.model_bracket_2014.append(self.simulate_game('Connecticut', "Saint Joseph's"))
+        # self.model_bracket_2014.append(self.simulate_game('Villanova', 'Milwaukee'))
+        # self.model_bracket_2014.append(self.simulate_game('Arizona', 'Weber State'))
+        # self.model_bracket_2014.append(self.simulate_game('Gonzaga', 'Oklahoma St'))
+        # self.model_bracket_2014.append(self.simulate_game('Oklahoma', 'North Dakota St'))
+        # self.model_bracket_2014.append(self.simulate_game('San Diego State', 'New Mexico St'))
+        # self.model_bracket_2014.append(self.simulate_game('Baylor', 'Nebraska'))
+        # self.model_bracket_2014.append(self.simulate_game('Creighton', 'LA-Lafayette'))
+        # self.model_bracket_2014.append(self.simulate_game('Oregon', 'BYU'))
+        # self.model_bracket_2014.append(self.simulate_game('Wisconsin', 'American U'))
+        # self.model_bracket_2014.append(self.simulate_game('Wichita State', 'Cal Poly'))
+        # self.model_bracket_2014.append(self.simulate_game('Kentucky', 'Kansas St'))
+        # self.model_bracket_2014.append(self.simulate_game('Saint Louis', 'NC State'))
+        # self.model_bracket_2014.append(self.simulate_game('Louisville', 'Manhattan'))
+        # self.model_bracket_2014.append(self.simulate_game('Massachusetts', 'Tennessee'))
+        # self.model_bracket_2014.append(self.simulate_game('Duke', 'Mercer'))
+        # self.model_bracket_2014.append(self.simulate_game('Texas', 'Arizona State'))
+        # self.model_bracket_2014.append(self.simulate_game('Michigan', 'Wofford'))
+        # 
+        # self.model_bracket_2014.append(self.simulate_game('Florida', 'Pittsburgh'))
+        # self.model_bracket_2014.append(self.simulate_game('SF Austin', 'UCLA'))
+        # self.model_bracket_2014.append(self.simulate_game('Dayton', 'Syracuse'))
+        # self.model_bracket_2014.append(self.simulate_game('Stanford', 'Kansas'))
+        # self.model_bracket_2014.append(self.simulate_game('Virginia', 'Memphis'))
+        # self.model_bracket_2014.append(self.simulate_game('Harvard', 'Michigan State'))
+        # self.model_bracket_2014.append(self.simulate_game('North Carolina', 'Iowa State'))
+        # self.model_bracket_2014.append(self.simulate_game('Connecticut', 'Villanova'))
+        # self.model_bracket_2014.append(self.simulate_game('Arizona', 'Gonzaga'))
+        # self.model_bracket_2014.append(self.simulate_game('North Dakota St', 'San Diego State'))
+        # self.model_bracket_2014.append(self.simulate_game('Baylor', 'Creighton'))
+        # self.model_bracket_2014.append(self.simulate_game('Oregon', 'Wisconsin'))
+        # self.model_bracket_2014.append(self.simulate_game('Wichita State', 'Kentucky'))
+        # self.model_bracket_2014.append(self.simulate_game('Saint Louis', 'Louisville'))
+        # self.model_bracket_2014.append(self.simulate_game('Tennessee', 'Mercer'))
+        # self.model_bracket_2014.append(self.simulate_game('Texas', 'Michigan'))
+        # 
+        # self.model_bracket_2014.append(self.simulate_game('Florida', 'UCLA'))
+        # self.model_bracket_2014.append(self.simulate_game('Dayton', 'Stanford'))
+        # self.model_bracket_2014.append(self.simulate_game('Virginia', 'Michigan State'))
+        # self.model_bracket_2014.append(self.simulate_game('Iowa State', 'Connecticut'))
+        # self.model_bracket_2014.append(self.simulate_game('Arizona', 'San Diego State'))
+        # self.model_bracket_2014.append(self.simulate_game('Baylor', 'Wisconsin'))
+        # self.model_bracket_2014.append(self.simulate_game('Kentucky', 'Louisville'))
+        # self.model_bracket_2014.append(self.simulate_game('Tennessee', 'Michigan'))
+        # 
+        # self.model_bracket_2014.append(self.simulate_game('Florida', 'Dayton'))
+        # self.model_bracket_2014.append(self.simulate_game('Michigan State', 'Connecticut'))
+        # self.model_bracket_2014.append(self.simulate_game('Arizona', 'Wisconsin'))
+        # self.model_bracket_2014.append(self.simulate_game('Kentucky', 'Michigan'))
+        # 
+        # self.model_bracket_2014.append(self.simulate_game('Florida', 'Connecticut'))
+        # self.model_bracket_2014.append(self.simulate_game('Wisconsin', 'Kentucky'))
+        # 
+        # self.model_bracket_2014.append(self.simulate_game('Connecticut', 'Kentucky'))
+
+        self.model_bracket_2008.append(self.simulate_game('North Carolina', 'Mount St Mary\'s'))
+        self.model_bracket_2008.append(self.simulate_game('Indiana', 'Arkansas'))
+        self.model_bracket_2008.append(self.simulate_game('Notre Dame', 'George Mason'))
+        self.model_bracket_2008.append(self.simulate_game('Washington St', 'Winthrop'))
+        self.model_bracket_2008.append(self.simulate_game('Oklahoma', 'Saint Joseph\'s'))
+        self.model_bracket_2008.append(self.simulate_game('Louisville', 'Boise State'))
+        self.model_bracket_2008.append(self.simulate_game('Butler', 'South Alabama'))
+        self.model_bracket_2008.append(self.simulate_game('Tennessee', 'American U'))
+        self.model_bracket_2008.append(self.simulate_game('Kansas', 'Portland St'))
+        self.model_bracket_2008.append(self.simulate_game('UNLV', 'Kent State'))
+        self.model_bracket_2008.append(self.simulate_game('Clemson', 'Villanova'))
+        self.model_bracket_2008.append(self.simulate_game('Vanderbilt', 'Siena'))
+        self.model_bracket_2008.append(self.simulate_game('USC', 'Kansas St'))
+        self.model_bracket_2008.append(self.simulate_game('Wisconsin', 'Mount St Mary\'s'))
+        self.model_bracket_2008.append(self.simulate_game('Gonzaga', "Davidson"))
+        self.model_bracket_2008.append(self.simulate_game('Georgetown', 'UMBC'))
+        self.model_bracket_2008.append(self.simulate_game('Memphis', 'TX-Arlington'))
+        self.model_bracket_2008.append(self.simulate_game('Mississippi St', 'Oregon'))
+        self.model_bracket_2008.append(self.simulate_game('Michigan State', 'Temple'))
+        self.model_bracket_2008.append(self.simulate_game('Pittsburgh', 'Oral Roberts'))
+        self.model_bracket_2008.append(self.simulate_game('Marquette', 'Kentucky'))
+        self.model_bracket_2008.append(self.simulate_game('Stanford', 'Cornell'))
+        self.model_bracket_2008.append(self.simulate_game('Miami (FL)', 'Saint Mary\'s'))
+        self.model_bracket_2008.append(self.simulate_game('Texas', 'Austin Peay'))
+        self.model_bracket_2008.append(self.simulate_game('UCLA', 'Miss Valley St'))
+        self.model_bracket_2008.append(self.simulate_game('BYU', 'Texas A&M'))
+        self.model_bracket_2008.append(self.simulate_game('Drake', 'W Kentucky'))
+        self.model_bracket_2008.append(self.simulate_game('Connecticut', 'San Diego'))
+        self.model_bracket_2008.append(self.simulate_game('Purdue', 'Baylor'))
+        self.model_bracket_2008.append(self.simulate_game('Xavier', 'Georgia'))
+        self.model_bracket_2008.append(self.simulate_game('West Virginia', 'Arizona'))
+        self.model_bracket_2008.append(self.simulate_game('Duke', 'Belmont'))
+
+        self.model_bracket_2008.append(self.simulate_game('North Carolina', 'Arkansas'))
+        self.model_bracket_2008.append(self.simulate_game('Notre Dame', 'Washington St'))
+        self.model_bracket_2008.append(self.simulate_game('Oklahoma', 'Louisville'))
+        self.model_bracket_2008.append(self.simulate_game('Butler', 'Tennessee'))
+        self.model_bracket_2008.append(self.simulate_game('Kansas', 'UNLV'))
+        self.model_bracket_2008.append(self.simulate_game('Villanova', 'Siena'))
+        self.model_bracket_2008.append(self.simulate_game('Kansas St', 'Wisconsin'))
+        self.model_bracket_2008.append(self.simulate_game('Davidson', 'Georgetown'))
+        self.model_bracket_2008.append(self.simulate_game('Memphis', 'Mississippi St'))
+        self.model_bracket_2008.append(self.simulate_game('Michigan State', 'Pittsburgh'))
+        self.model_bracket_2008.append(self.simulate_game('Marquette', 'Stanford'))
+        self.model_bracket_2008.append(self.simulate_game('Miami (FL)', 'Texas'))
+        self.model_bracket_2008.append(self.simulate_game('UCLA', 'Texas A&M'))
+        self.model_bracket_2008.append(self.simulate_game('W Kentucky', 'San Diego'))
+        self.model_bracket_2008.append(self.simulate_game('Purdue', 'Xavier'))
+        self.model_bracket_2008.append(self.simulate_game('West Virginia', 'Duke'))
+
+        self.model_bracket_2008.append(self.simulate_game('North Carolina', 'Washington St'))
+        self.model_bracket_2008.append(self.simulate_game('Louisville', 'Tennessee'))
+        self.model_bracket_2008.append(self.simulate_game('Kansas', 'Villanova'))
+        self.model_bracket_2008.append(self.simulate_game('Wisconsin', 'Davidson'))
+        self.model_bracket_2008.append(self.simulate_game('Memphis', 'Michigan State'))
+        self.model_bracket_2008.append(self.simulate_game('Stanford', 'Texas'))
+        self.model_bracket_2008.append(self.simulate_game('UCLA', 'W Kentucky'))
+        self.model_bracket_2008.append(self.simulate_game('Xavier', 'West Virginia'))
+
+        self.model_bracket_2008.append(self.simulate_game('North Carolina', 'Louisville'))
+        self.model_bracket_2008.append(self.simulate_game('Kansas', 'Davidson'))
+        self.model_bracket_2008.append(self.simulate_game('Memphis', 'Texas'))
+        self.model_bracket_2008.append(self.simulate_game('UCLA', 'Xavier'))
+
+        self.model_bracket_2008.append(self.simulate_game('North Carolina', 'Kansas'))
+        self.model_bracket_2008.append(self.simulate_game('Memphis', 'UCLA'))
+
+        self.model_bracket_2008.append(self.simulate_game('Kansas', 'Memphis'))
+        success = 0
+        if len(self.model_bracket_2008) == len(self.winning_bracket_2008):
+            for iterator in range(0, len(self.model_bracket_2008)):
+                if self.model_bracket_2008[iterator] == self.winning_bracket_2008[iterator]:
+                    success += 1
+        else:
+            print("Error!  Length of Model and Winner Brackets are not equal!")
+
+        accuracy_of_model = success/len(self.model_bracket_2008)
+        self.model_bracket_2008 = []
+        return accuracy_of_model
+
+    def simulate_game(self, team1_name, team2_name):
+        year = 2008
+        stats_class.populate_game_stats(team1_name, year)
+        stats_class.create_stats(team1_name, year)
+        stats_class.populate_game_stats(team2_name, year)
+        stats_class.create_stats(team2_name, year)
+
+        result = self.predict_winner(stats_class.season_averages[team1_name, year],
+                                     stats_class.season_averages[team2_name, year])
+
+        return result
+
+    def print_model(self):
+        print(*self.model_modifiers, sep=', ')
+        print(self.accuracy)
