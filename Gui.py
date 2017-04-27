@@ -20,13 +20,9 @@ class Application(tk.Frame):
         self.calc_button = tk.Button(root, text='Calculate', command=self.display_results)
         self.calc_button.place(relx=.5, rely=.5, anchor=tk.CENTER)
 
-        teams = ['Villanova', 'Kansas', 'North Carolina', 'Gonzaga', 'Kentucky', 'Arizona', 'Duke', 'Louisville',
-                 'Oregon', 'Florida St', 'UCLA', 'Baylor', 'Butler', 'Florida', 'West Virginia', 'Purdue', 'Virginia',
-                 "Syracuse", "Vermont", "Georgetown", "Ohio", "New Mexico", "Harvard", "Mercer", 'Kansas', 'Memphis']
+        teams = stats_class.all_teams
 
-        teams = sorted(teams)
-
-        years = [2008, 2009, 2010, 2011, 2012, 2013, 2014]
+        years = stats_class.all_years
 
         self.year_label = tk.Label(root, text='Year:')
         self.year_label.place(relx=.5, rely=.03, anchor=tk.CENTER)
@@ -66,7 +62,7 @@ class Application(tk.Frame):
 
         result = model.predict_winner(stats_class.season_averages[team1_name, year], stats_class.season_averages[team2_name, year])
 
-        if result == True:
+        if result:
             self.result['text'] = team1_name + " is predicted to win."
         else:
             self.result['text'] = team2_name + " is predicted to win."
