@@ -1,4 +1,4 @@
-from math import expm1, fabs
+from collections import defaultdict
 
 
 class Model(object):
@@ -22,21 +22,11 @@ class Model(object):
         self.turnovers = 0
         self.foul = 0
         self.allowed_points = 0
-        self.points_predictor = 4.0
-        self.fg_percentage_predictor = 25.0
-        self.fgs_attempted_predictor = 2.0
-        self.three_ptr_percentage_predictor = 15.0
-        self.three_ptrs_attempted_predictor = 1.0
-        self.offensive_rebounds_predictor = 1.5
-        self.total_rebounds_predictor = 1.0
-        self.assists_predictor = .5
-        self.stls_predictor = .5
-        self.blks_predictor = .5
-        self.turnovers_predictor = 1.0
-        self.foul_predictor = .3
-        self.allowed_points_predictor = 2.0
-        
         self.altering_value = 0
+        self.accuracy = 0
+        self.model_modifiers = [4.0, 25.0, 2.0, 15.0, 1.0, 1.5, 1.0, 0.5, 0.5, 0.5, 1.0, 0.3, 2.0]
+        self.current_modifiers = [4.0, 25.0, 2.0, 15.0, 1.0, 1.5, 1.0, 0.5, 0.5, 0.5, 1.0, 0.3, 2.0]
+        self.max_modifiers = [10.0, 30.0, 5.0, 25.0, 2.5, 3.5, 2.5, 2.0, 2.0, 2.0, 2.5, 1.0, 5.0]
 
     def predict_winner(self, team1_stats, team2_stats):
         team1_score = 0
@@ -86,12 +76,25 @@ class Model(object):
             return False
 
     def adjust_model(self):
-        return 0
+        for position, element in enumerate(self.model_modifiers):
+            if self.current_modifiers[position] < self.max_modifiers[position]:
+                self.current_modifiers[position] += 0.1
+                possible_model_value = self.compare_model()
+                if possible_model_value > self.accuracy:
+                    self.accuracy = possible_model_value
+                    self.model_modifiers[position] = self.current_modifiers[position]
 
     def compute_v_value(self):
-        self.altering_value = (self.points_per_game * self.points_predictor + self.fg_percentage * self.fg_percentage_predictor \
-                              + self.fgs_attempted * self.fgs_attempted_predictor + self.three_ptr_percentage * self.three_ptr_percentage_predictor \
-                              + self.three_ptrs_attempted * self.three_ptrs_attempted_predictor + self.offensive_rebounds * self.offensive_rebounds_predictor \
-                              + self.total_rebounds * self.total_rebounds_predictor + self.assists * self.assists_predictor + self.stls * self.stls_predictor \
-                              + self.blks * self.blks_predictor + self.turnovers * self.turnovers_predictor + self.foul * self.foul_predictor \
-                              - self.allowed_points * self.allowed_points_predictor) / 100
+        self.altering_value = (self.points_per_game * self.current_modifiers[0]
+                               + self.fg_percentage * self.current_modifiers[1]
+                               + self.fgs_attempted * self.current_modifiers[2]
+                               + self.three_ptr_percentage * self.current_modifiers[3]
+                               + self.three_ptrs_attempted * self.current_modifiers[4]
+                               + self.offensive_rebounds * self.current_modifiers[5]
+                               + self.total_rebounds * self.current_modifiers[6]
+                               + self.assists * self.current_modifiers[7]
+                               + self.stls * self.current_modifiers[8]
+                               + self.blks * self.current_modifiers[9]
+                               - self.turnovers * self.current_modifiers[10]
+                               - self.foul * self.current_modifiers[11]
+                               - self.allowed_points * self.current_modifiers[12]) / 100
