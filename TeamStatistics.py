@@ -29,14 +29,14 @@ class TeamStatistics(object):
         self.game_stats[team, year] = frame
 
     def read_in_data(self):
-        game_stats = pd.read_csv('All_Data/09_14_game_stats.csv')
-        game_info = pd.read_csv('All_Data/09_14_game_info.csv')
+        game_stats = pd.read_csv('All_Data/Teams.csv')
+        game_info = pd.read_csv('All_Data/RegularSeasonDetailedResults.csv')
 
-        self.all_stats = pd.merge(game_stats, game_info, left_on="game_id", right_on="Game_ID")
+        self.all_stats = pd.merge(game_stats, game_info, left_on="TeamID", right_on="WTeamID")
 
-        all_teams = self.all_stats.team.unique()
+        all_teams = self.all_stats.TeamName.unique()
 
-        all_years = self.all_stats.year.unique()
+        all_years = self.all_stats.Season.unique()
 
         self.all_teams = sorted(all_teams)
         self.all_years = sorted(all_years)
