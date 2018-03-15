@@ -13,7 +13,8 @@ class TeamStatistics(object):
     def __init__(self):
         self.game_stats = defaultdict(lambda: [0, 0])
         self.season_averages = defaultdict(lambda : [0,0])
-        self.all_stats = pd.DataFrame()
+        self.teams = pd.DataFrame()
+        self.game_infos = pd.DataFrame()
         self.all_teams = []
         self.all_years = []
 
@@ -29,22 +30,30 @@ class TeamStatistics(object):
         self.game_stats[team, year] = frame
 
     def read_in_data(self):
-        game_stats = pd.read_csv('All_Data/Teams.csv')
-        game_info = pd.read_csv('All_Data/RegularSeasonDetailedResults.csv')
+        self.teams = pd.read_csv('All_Data/Teams.csv', encoding="utf-8")
+        self.game_infos = pd.read_csv('All_Data/RegularSeasonDetailedResults.csv', encoding="utf-8")
+        
+        all_teams = self.teams.TeamName.unique()
 
-        self.all_stats = pd.merge(game_stats, game_info, left_on="TeamID", right_on="WTeamID")
-
-        all_teams = self.all_stats.TeamName.unique()
-
-        all_years = self.all_stats.Season.unique()
+        all_years = self.game_infos.Season.unique()
 
         self.all_teams = sorted(all_teams)
         self.all_years = sorted(all_years)
 
     def populate_game_stats(self, team1, year):
-        self.game_stats[team1, year] = self.all_stats.ix[
-            ((self.all_stats['team'] == team1) | (self.all_stats['opponent'] == team1))
-            & (self.all_stats['year'] == year)]
+        team_id = self.get_team_id(team1)
+        self.game_stats[team_id, year] = self.game_infos.ix[
+            ((self.game_infos['WTeamID'] == team_id) | (self.game_infos['LTeamID'] == team_id))
+            & (self.game_infos['Season'] == year)]
+        
+    def get_team_id(self, team_name):
+        row = self.teams.loc[self.teams['TeamName'] == team_name]
+        return row.iloc[0,0]
+    
+    def get_team_name(self, team_id):
+        row = self.teams.loc[self.teams['TeamID'] == team_id]
+        return row.iloc[0,0]
+        
 
     def create_stats(self, team, year):
         #print(self.game_stats[team, year])
