@@ -72,103 +72,106 @@ class TeamStatistics(object):
         pts_allowed = 0
         total_games = 0
         home = []
-        team_id = self.get_team_id(self, team)
+        team_id = self.get_team_id(team)
 
-        for game in self.game_stats[team, year]['team']:
-            if game == team:
+        for game in self.game_stats[team_id, year]['WTeamID']:
+            if game == team_id:
                 home.append(1)
             else:
                 home.append(0)
+                
 
-        for column in self.game_stats[team, year]:
+        for column in self.game_stats[team_id, year]:
             if column == 'WScore':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         pts += game
                     total_games += 1
                     iterator += 1
             if column == 'WFGM':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         fgm += game
                     iterator += 1
             if column == 'WFGA':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         fga += game
                     iterator += 1
             if column == 'WFGM3':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         t_3pm += game
                     iterator += 1
             if column == 'WFGA3':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         t_3pa += game
                     iterator += 1
             if column == 'WOR':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         oreb += game
                     iterator += 1
             if column == 'WDR':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         reb += game
                     iterator += 1
             if column == 'WAst':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         ast += game
                     iterator += 1
             if column == 'WStl':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         stl += game
                     iterator += 1
             if column == 'WBlk':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         blk += game
                     iterator += 1
             if column == 'WTO':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         turnover += game
                     iterator += 1
             if column == 'WPF':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         pf += game
                     iterator += 1
             if column == 'LScore':
                 iterator = 0
-                for game in self.game_stats[team, year][column]:
+                for game in self.game_stats[team_id, year][column]:
                     if home[iterator]:
                         pts += game
                     iterator += 1
                 
-        print(game_stats[team, year])
+        #print(self.game_stats[team_id, year])
+        
+        
 
-        self.season_averages[team, year] = [pts/total_games, fgm/total_games, fga/total_games, t_3pa/total_games,
+        self.season_averages[team_id, year] = [pts/total_games, fgm/total_games, fga/total_games, t_3pa/total_games,
                                             t_3pm/total_games, oreb/total_games, reb/total_games, ast/total_games,
                                             stl/total_games, blk/total_games, turnover/total_games, pf/total_games,
                                             pts_allowed/total_games]
 
-        return self.season_averages[team, year]
+        return self.season_averages[team_id, year]
 
 
 
