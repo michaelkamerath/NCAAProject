@@ -56,14 +56,16 @@ class Application(tk.Frame):
 
     def display_results(self):
         team1_name = self.team1_combo.get()
+        team1_id = stats_class.get_team_id(team1_name)
         team2_name = self.team2_combo.get()
+        team2_id = stats_class.get_team_id(team2_name)
         year = int(self.year_combo.get())
         stats_class.populate_game_stats(team1_name, year)
         stats_class.create_stats(team1_name, year)
         stats_class.populate_game_stats(team2_name, year)
         stats_class.create_stats(team2_name, year)
 
-        result = model.predict_winner(stats_class.season_averages[team1_name, year], stats_class.season_averages[team2_name, year])
+        result = model.predict_winner(stats_class.season_averages[team1_id, year], stats_class.season_averages[team2_id, year])
 
         if result:
             self.result['text'] = team1_name + " is predicted to win."
