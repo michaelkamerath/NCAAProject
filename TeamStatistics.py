@@ -31,7 +31,7 @@ class TeamStatistics(object):
 
     def read_in_data(self):
         self.teams = pd.read_csv('All_Data/Teams.csv', encoding="utf-8")
-        self.game_infos = pd.read_csv('All_Data/RegularSeasonDetailedResults.csv', encoding="utf-8")
+        self.game_infos = pd.read_csv('All_Data/RegularSeasonDetailedResults_Prelim2018.csv', encoding="utf-8")
         
         all_teams = self.teams.TeamName.unique()
 
