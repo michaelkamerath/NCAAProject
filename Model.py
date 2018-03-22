@@ -6,12 +6,14 @@ stats_class = ts.TeamStatistics()
 stats_class.read_in_data()
 
 class Model(object):
+    
     # Our model is in the form Win Percentage = e^v / 1 + e^v
     # In this case, our v is:
     #  points * predictor1 + fg_percentage * predictor2 + fgs_attempted * predictor3 + ...
     #  We will start out with an educated guess on what are the most important factors
     #  are and then run our fitness function to adjust all of the predictors to try and
     #  find better models
+    #  
     def __init__(self):
         self.points_per_game = 0
         self.fg_percentage = 0
@@ -34,22 +36,6 @@ class Model(object):
         self.max_modifiers = [10.0, 30.0, 5.0, 25.0, 2.5, 3.5, 2.5, 2.0, 2.0, 2.0, 2.5, 1.0, 5.0]
         self.model_bracket_2014 = []
         self.model_bracket_2008 = []
-        self.winning_bracket_2014 = \
-            [1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1,
-             1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1,
-
-             1, 0, 1, 1, 1, 0, 0, 1,
-             1, 0, 1, 0, 0, 0, 1, 0,
-
-             1, 1, 0, 0,
-             1, 0, 1, 0,
-
-             1, 0,
-             0, 1,
-
-             0, 0,
-
-             1]
         self.winning_bracket_2008 = \
             [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1,
              1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1,
@@ -64,6 +50,22 @@ class Model(object):
              1, 1,
 
              0, 1,
+
+             1]
+        self.winning_bracket_2014 = \
+            [1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+             1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1,
+
+             1, 0, 1, 1, 1, 0, 0, 1,
+             1, 0, 1, 0, 0, 0, 1, 0,
+
+             1, 1, 0, 0,
+             1, 0, 1, 0,
+
+             1, 0,
+             0, 1,
+
+             0, 0,
 
              1]
         
@@ -313,8 +315,8 @@ class Model(object):
         stats_class.populate_game_stats(team2_name, year)
         stats_class.create_stats(team2_name, year)
 
-        result = self.predict_winner(stats_class.season_averages[team1_name, year],
-                                     stats_class.season_averages[team2_name, year])
+        result = self.predict_winner(stats_class.get_team_season_averages(team1_name, year),
+                                     stats_class.get_team_season_averages(team2_name, year))
 
         return result
 

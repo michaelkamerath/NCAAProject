@@ -23,9 +23,9 @@ class Application(tk.Frame):
         self.calc_button = tk.Button(root, text='Calculate', command=self.display_results)
         self.calc_button.place(relx=.5, rely=.5, anchor=tk.CENTER)
 
-        teams = stats_class.all_teams
+        teams = stats_class.get_all_teams()
 
-        years = stats_class.all_years
+        years = stats_class.get_all_years()
 
         self.year_label = tk.Label(root, text='Year:')
         self.year_label.place(relx=.5, rely=.03, anchor=tk.CENTER)
@@ -65,7 +65,8 @@ class Application(tk.Frame):
         stats_class.populate_game_stats(team2_name, year)
         stats_class.create_stats(team2_name, year)
 
-        result = model.predict_winner(stats_class.season_averages[team1_id, year], stats_class.season_averages[team2_id, year])
+        result = model.predict_winner(stats_class.get_team_season_averages(team1_id, year),
+                                      stats_class.get_team_season_averages(team2_id, year))
 
         if result:
             self.result['text'] = team1_name + " is predicted to win."
